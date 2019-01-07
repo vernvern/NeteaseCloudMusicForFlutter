@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
+import 'package:music_app/song.dart';
+
 class Index extends StatefulWidget {
   @override
   createState() => new IndexState();
@@ -26,12 +28,12 @@ class IndexState extends State<Index> {
   bool showOnlyCompleted = false;
   final GlobalKey<AnimatedListState> _listKey =
       new GlobalKey<AnimatedListState>();
-  ListModel listModel;
+  SongModule songModule;
 
   @override
   void initState() {
     super.initState();
-    listModel = new ListModel(_listKey, songList);
+    songModule = new SongModule(_listKey, songList);
   }
 
   @override
@@ -150,7 +152,7 @@ class IndexState extends State<Index> {
         key: _listKey,
         itemBuilder: (context, index, animation) {
           return new SongRow(
-            song: listModel[index],
+            song: songModule[index],
             animation: animation,
           );
         },
@@ -172,110 +174,12 @@ class IndexState extends State<Index> {
     showOnlyCompleted = !showOnlyCompleted;
     songList.where((song) => song.author == 'author1').forEach((song) {
       if (showOnlyCompleted) {
-        listModel.removeAt(listModel.indexOf(song));
+        songModule.removeAt(songModule.indexOf(song));
       } else {
-        listModel.insert(songList.indexOf(song), song);
+        songModule.insert(songList.indexOf(song), song);
       }
     });
   }
-}
-
-class Song {
-  String author;
-  String title;
-  String link;
-
-  Song({this.author, this.title, this.link});
-}
-
-class SongRow extends StatelessWidget {
-  final Song song;
-  final double doSite = 12.0;
-  final Animation<double> animation;
-  const SongRow({Key key, this.song, this.animation}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return new FadeTransition(
-      opacity: animation,
-      child: new SizeTransition(
-        sizeFactor: animation,
-        child: new Padding(
-          padding: const EdgeInsets.symmetric(vertical: 16.0),
-          child: new Row(
-            children: <Widget>[
-              new Padding(
-                padding:
-                    new EdgeInsets.symmetric(horizontal: 32.0 - doSite / 2),
-                child: new Container(
-                  height: doSite,
-                  width: doSite,
-                  decoration: new BoxDecoration(
-                      shape: BoxShape.circle, color: Colors.blue),
-                ),
-              ),
-              new Expanded(
-                child: new Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    new Text(
-                      song.title,
-                      style: TextStyle(fontSize: 18.0),
-                    ),
-                    new Text(
-                      song.author,
-                      style: TextStyle(fontSize: 12.0, color: Colors.grey),
-                    ),
-                  ],
-                ),
-              ),
-              new Padding(
-                padding: const EdgeInsets.only(right: 16.0),
-                child: new Text(
-                  song.link,
-                  style: new TextStyle(fontSize: 12.0, color: Colors.grey),
-                ),
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ListModel {
-  ListModel(this.listKey, items) : this.items = new List.of(items);
-  final GlobalKey<AnimatedListState> listKey;
-  final List<Song> items;
-
-  AnimatedListState get _animatedList => listKey.currentState;
-
-  void insert(int index, Song song) {
-    items.insert((index), song);
-    _animatedList.insertItem(index);
-  }
-
-  Song removeAt(int index) {
-    final Song removedItem = items.removeAt(index);
-    if (removedItem != null) {
-      _animatedList.removeItem(
-        index,
-        (context, animation) => new SongRow(
-              song: removedItem,
-              animation: animation,
-            ),
-        // duration: new Duration(microseconds: 250000.toInt()),
-      );
-    }
-    return removedItem;
-  }
-
-  int get length => items.length;
-
-  Song operator [](int index) => items[index];
-
-  int indexOf(Song item) => items.indexOf(item);
 }
 
 class AnimatedFab extends StatefulWidget {
