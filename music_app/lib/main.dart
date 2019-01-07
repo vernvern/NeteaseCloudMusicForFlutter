@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 
 import 'package:music_app/login.dart';
-import 'package:music_app/index/index.dart';
+import 'package:music_app/view/index.dart';
 
 void main() => runApp(new MyApp());
 
@@ -16,7 +16,7 @@ class MyApp extends StatelessWidget {
       theme: new ThemeData(
         primaryColor: Colors.white,
       ),
-      home: new Index(),
+      home: new IndexView(),
     ); /*  */
   }
 }
