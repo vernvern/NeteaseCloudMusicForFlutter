@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
-import 'package:music_app/song.dart';
+import './song.dart';
 
 class Index extends StatefulWidget {
   @override

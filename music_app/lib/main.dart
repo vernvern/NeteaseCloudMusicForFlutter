@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:english_words/english_words.dart';
 
 import 'package:music_app/login.dart';
-import 'package:music_app/index.dart';
+import 'package:music_app/index/index.dart';
 
 void main() => runApp(new MyApp());
 
