@@ -7,28 +7,25 @@ abstract class MusicButtonContract {
   AnimationController animationController;
 }
 
-class MusicButtonPresenter implements MusicButtonContract {
+class MusicButtonPresenter {
   MusicButtonContract _view;
-  AnimationController animationController;
 
-  MusicButtonPresenter(this._view) {
-    animationController = _view.animationController;
-  }
+  MusicButtonPresenter(this._view) {}
 
   _open() {
-    if (animationController.isDismissed) {
-      animationController.forward();
+    if (this._view.animationController.isDismissed) {
+      this._view.animationController.forward();
     }
   }
 
   _close() {
-    if (animationController.isCompleted) {
-      animationController.reverse();
+    if (this._view.animationController.isCompleted) {
+      this._view.animationController.reverse();
     }
   }
 
   onFabTap() {
-    if (animationController.isDismissed) {
+    if (this._view.animationController.isDismissed) {
       _open();
     } else {
       _close();
@@ -36,7 +33,7 @@ class MusicButtonPresenter implements MusicButtonContract {
   }
 
   void dispose() {
-    animationController.dispose();
+    this._view.animationController.dispose();
   }
 }
 

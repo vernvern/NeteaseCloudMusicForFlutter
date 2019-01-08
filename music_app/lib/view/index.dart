@@ -185,7 +185,7 @@ class _MusicButtonState extends State<MusicButton>
         vsync: this, duration: Duration(microseconds: 200));
     _presenter = MusicButtonPresenter(this);
     _colorAnimation = new ColorTween(begin: Colors.pink, end: Colors.pink[800])
-        .animate(_presenter.animationController);
+        .animate(animationController);
   }
 
 /*   @override
@@ -200,7 +200,7 @@ class _MusicButtonState extends State<MusicButton>
         width: expandedSize,
         height: expandedSize,
         child: new AnimatedBuilder(
-          animation: _presenter.animationController,
+          animation: animationController,
           builder: (BuildContext context, Widget child) {
             return new Stack(
               alignment: Alignment.center,
@@ -218,8 +218,8 @@ class _MusicButtonState extends State<MusicButton>
   }
 
   Widget _buildOptionBackground() {
-    double size = hiddenSize +
-        (expandedSize - hiddenSize) * _presenter.animationController.value;
+    double size =
+        hiddenSize + (expandedSize - hiddenSize) * animationController.value;
     return new Container(
       height: size,
       width: size,
@@ -228,16 +228,14 @@ class _MusicButtonState extends State<MusicButton>
   }
 
   Widget _buildMusicButton() {
-    double scaleFactor = 2 * (_presenter.animationController.value - 0.5).abs();
+    double scaleFactor = 2 * (animationController.value - 0.5).abs();
     return new FloatingActionButton(
       onPressed: _presenter.onFabTap,
       child: new Transform(
           alignment: Alignment.center,
           transform: new Matrix4.identity()..scale(1.0, scaleFactor),
           child: new Icon(
-            _presenter.animationController.value > 0.5
-                ? Icons.close
-                : Icons.filter_list,
+            animationController.value > 0.5 ? Icons.close : Icons.filter_list,
             color: Colors.white,
             size: 26.0,
           )),
@@ -247,8 +245,8 @@ class _MusicButtonState extends State<MusicButton>
 
   Widget __buildOptionButton(IconData icon, double angle) {
     double iconSize = 0.0;
-    if (_presenter.animationController.value > 0.0) {
-      iconSize = 26.0 * (_presenter.animationController.value - 0.8) * 5;
+    if (animationController.value > 0.0) {
+      iconSize = 26.0 * (animationController.value - 0.8) * 5;
     }
     return Transform.rotate(
       angle: angle,
