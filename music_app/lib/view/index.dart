@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:math' as math;
 
 import 'package:music_app/models.dart';
+import 'package:music_app/presenters/index.dart';
 
 class IndexView extends StatefulWidget {
   @override
@@ -164,7 +165,7 @@ class IndexViewState extends State<IndexView> {
     return new Positioned(
       top: _imageHeight - 100.0,
       right: -40.0,
-      child: new AnimatedFab(
+      child: new MusicButton(
         onClick: _changeFilterState,
       ),
     );
@@ -182,63 +183,68 @@ class IndexViewState extends State<IndexView> {
   }
 }
 
-class AnimatedFab extends StatefulWidget {
+class MusicButton extends StatefulWidget {
   final VoidCallback onClick;
-  const AnimatedFab({Key key, this.onClick}) : super(key: key);
+  const MusicButton({Key key, this.onClick}) : super(key: key);
 
   @override
-  _AnimatedFabState createState() => new _AnimatedFabState();
+  _MusicButtonState createState() => new _MusicButtonState();
 }
 
-class _AnimatedFabState extends State<AnimatedFab>
-    with SingleTickerProviderStateMixin {
-  AnimationController _animationController;
+class _MusicButtonState extends State<MusicButton>
+    with SingleTickerProviderStateMixin
+    implements MusicButtonContract {
+  MusicButtonPresenter _presenter;
   Animation<Color> _colorAnimation;
+  AnimationController animationController;
 
   final double expandedSize = 180.0;
   final double hiddenSize = 20.0;
 
+  _MusicButtonState() {}
+
   @override
   void initState() {
     super.initState();
-    _animationController = new AnimationController(
+    animationController = new AnimationController(
         vsync: this, duration: Duration(microseconds: 200));
+    _presenter = MusicButtonPresenter(this);
     _colorAnimation = new ColorTween(begin: Colors.pink, end: Colors.pink[800])
-        .animate(_animationController);
+        .animate(_presenter.animationController);
   }
 
-  @override
+/*   @override
   void dispose() {
-    _animationController.dispose();
+    _presenter.animationController.dispose();
     super.dispose();
   }
-
+ */
   @override
   Widget build(BuildContext context) {
     return new SizedBox(
         width: expandedSize,
         height: expandedSize,
         child: new AnimatedBuilder(
-          animation: _animationController,
+          animation: _presenter.animationController,
           builder: (BuildContext context, Widget child) {
             return new Stack(
               alignment: Alignment.center,
               children: <Widget>[
-                _buildExpandBackground(),
-                _buildOption(Icons.check_circle, 0.0),
-                _buildOption(Icons.flash_on, -math.pi / 3),
-                _buildOption(Icons.access_time, -2 * math.pi / 3),
-                _buildOption(Icons.error_outline, math.pi),
-                _buildFabCore(),
+                _buildOptionBackground(),
+                __buildOptionButton(Icons.check_circle, 0.0),
+                __buildOptionButton(Icons.flash_on, -math.pi / 3),
+                __buildOptionButton(Icons.access_time, -2 * math.pi / 3),
+                __buildOptionButton(Icons.error_outline, math.pi),
+                _buildMusicButton(),
               ],
             );
           },
         ));
   }
 
-  Widget _buildExpandBackground() {
-    double size =
-        hiddenSize + (expandedSize - hiddenSize) * _animationController.value;
+  Widget _buildOptionBackground() {
+    double size = hiddenSize +
+        (expandedSize - hiddenSize) * _presenter.animationController.value;
     return new Container(
       height: size,
       width: size,
@@ -246,15 +252,17 @@ class _AnimatedFabState extends State<AnimatedFab>
     );
   }
 
-  Widget _buildFabCore() {
-    double scaleFactor = 2 * (_animationController.value - 0.5).abs();
+  Widget _buildMusicButton() {
+    double scaleFactor = 2 * (_presenter.animationController.value - 0.5).abs();
     return new FloatingActionButton(
-      onPressed: _onFabTap,
+      onPressed: _presenter.onFabTap,
       child: new Transform(
           alignment: Alignment.center,
           transform: new Matrix4.identity()..scale(1.0, scaleFactor),
           child: new Icon(
-            _animationController.value > 0.5 ? Icons.close : Icons.filter_list,
+            _presenter.animationController.value > 0.5
+                ? Icons.close
+                : Icons.filter_list,
             color: Colors.white,
             size: 26.0,
           )),
@@ -262,30 +270,10 @@ class _AnimatedFabState extends State<AnimatedFab>
     );
   }
 
-  open() {
-    if (_animationController.isDismissed) {
-      _animationController.forward();
-    }
-  }
-
-  close() {
-    if (_animationController.isCompleted) {
-      _animationController.reverse();
-    }
-  }
-
-  _onFabTap() {
-    if (_animationController.isDismissed) {
-      open();
-    } else {
-      close();
-    }
-  }
-
-  Widget _buildOption(IconData icon, double angle) {
+  Widget __buildOptionButton(IconData icon, double angle) {
     double iconSize = 0.0;
-    if (_animationController.value > 0.0) {
-      iconSize = 26.0 * (_animationController.value - 0.8) * 5;
+    if (_presenter.animationController.value > 0.0) {
+      iconSize = 26.0 * (_presenter.animationController.value - 0.8) * 5;
     }
     return Transform.rotate(
       angle: angle,
