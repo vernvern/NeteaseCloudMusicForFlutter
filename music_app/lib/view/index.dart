@@ -10,32 +10,17 @@ class IndexView extends StatefulWidget {
   createState() => new IndexViewState();
 }
 
-List<Song> songList = [
-  new Song(link: 'link1', title: 'title1', author: 'author1'),
-  new Song(link: 'link2', title: 'title2', author: 'author2'),
-  new Song(link: 'link3', title: 'title3', author: 'author3'),
-  new Song(link: 'link4', title: 'title4', author: 'author3'),
-  new Song(link: 'link5', title: 'title5', author: 'author5'),
-  new Song(link: 'link6', title: 'title6', author: 'author6'),
-  new Song(link: 'link1', title: 'title1', author: 'author1'),
-  new Song(link: 'link2', title: 'title2', author: 'author2'),
-  new Song(link: 'link3', title: 'title3', author: 'author3'),
-  new Song(link: 'link4', title: 'title4', author: 'author3'),
-  new Song(link: 'link5', title: 'title5', author: 'author5'),
-  new Song(link: 'link6', title: 'title6', author: 'author6'),
-];
-
-class IndexViewState extends State<IndexView> {
+class IndexViewState extends State<IndexView> implements IndexViewContrack {
   double _imageHeight = 300.0;
-  bool showOnlyCompleted = false;
-  final GlobalKey<AnimatedListState> _listKey =
-      new GlobalKey<AnimatedListState>();
-  SongPresenter songPresenter;
+
+  IndexViewPresenter _presenter;
+
+  IndexViewState() {}
 
   @override
   void initState() {
     super.initState();
-    songPresenter = new SongPresenter(_listKey, songList);
+    _presenter = new IndexViewPresenter(this);
   }
 
   @override
@@ -150,11 +135,11 @@ class IndexViewState extends State<IndexView> {
   Widget _buildSongList() {
     return new Expanded(
       child: new AnimatedList(
-        initialItemCount: songList.length,
-        key: _listKey,
+        initialItemCount: _presenter.songList.length,
+        key: _presenter.listKey,
         itemBuilder: (context, index, animation) {
           return new SongRow(
-            song: songPresenter[index],
+            song: _presenter.songPresenter[index],
             animation: animation,
           );
         },
@@ -167,20 +152,9 @@ class IndexViewState extends State<IndexView> {
       top: _imageHeight - 100.0,
       right: -40.0,
       child: new MusicButton(
-        onClick: _changeFilterState,
+        onClick: _presenter.changeFilterState,
       ),
     );
-  }
-
-  Widget _changeFilterState() {
-    showOnlyCompleted = !showOnlyCompleted;
-    songList.where((song) => song.author == 'author1').forEach((song) {
-      if (showOnlyCompleted) {
-        songPresenter.removeAt(songPresenter.indexOf(song));
-      } else {
-        songPresenter.insert(songList.indexOf(song), song);
-      }
-    });
   }
 }
 
