@@ -11,12 +11,18 @@ var _isLogin = false;
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var home;
+    if (_isLogin) {
+      home = new IndexView();
+    } else {
+      home = new LoginView();
+    }
     return new MaterialApp(
       title: 'Netease Clound Misic Demo',
       theme: new ThemeData(
         primaryColor: Colors.white,
       ),
-      home: new IndexView(),
+      home: home,
     ); /*  */
   }
 }
